@@ -8,7 +8,7 @@ module.exports = {
     const users = await User.findAll({ raw: true, nest: true })
     const tweets = await Tweet.findAll({ raw: true, nest: true })
 
-    queryInterface.bulkInsert('Likes',
+    await queryInterface.bulkInsert('Likes',
       Array.from({ length: 50 }).map((d, i) => (
         {
           UserId: users[Math.floor(Math.random() * 3)].id,
