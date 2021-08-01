@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken')
 const db = require('../models')
 const User = db.User
 const { Op } = require('sequelize')
+const helpers = require('../_helpers')
 
 const userController = {
   // 登入
@@ -94,7 +95,9 @@ const userController = {
       console.log(error)
       return next(error)
     }
-  }
+  },
+
+
 }
 
 module.exports = userController

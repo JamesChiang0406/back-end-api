@@ -9,7 +9,8 @@ const tweetController = require('../controllers/tweetController')
 router.post('/login', userController.login)
 router.post('/regist', userController.register)
 
-// 取得使用者資料
+// 操作使用者資料
 router.get('/users/:id', userController.getUser)
+router.put('/users/:id', userController.putUser)
 
 module.exports = router
