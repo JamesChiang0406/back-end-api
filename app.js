@@ -1,4 +1,5 @@
 const express = require('express')
+const flash = require('connect-flash')
 const helpers = require('./_helpers');
 
 const app = express()
@@ -11,8 +12,11 @@ function authenticated(req, res, next) {
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
+app.use(flash())
 
 app.use((req, res, next) => {
+  res.locals.success_msg = req.flash('success_msg')
+  res.locals.error_msg = req.flash('error_msg')
   res.locals.user = req.user
   next()
 })
