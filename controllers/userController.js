@@ -97,7 +97,39 @@ const userController = {
     }
   },
 
+  //修改使用者資料
+  putUser: async (req, res, next) => {
+    try {
+      const userId = helpers.getUser(req).id
+      const id = Number(req.params.id)
+      const { account, name, email, password, passwordCheck } = req.body
+      const users = await User.findAll({
+        where: {
+          [Op.or]: [{ account }, { email }],
+          [Op.not]: [{ id: userId }]
+        }
+      })
 
+      if (userId !== id) {
+        return res.status(403).json({ status: 'error', message: '無法編輯其它使用者的資料！' })
+      }
+      if (password !== passwordCheck) {
+        return res.status(400).json({ status: 'error', message: '密碼確認不符，請再次確認！' })
+      }
+      if (users.length) {
+        return res.status(409).json({ status: 'error', message: '帳號或電子郵件已存在，請重新輸入！' })
+      }
+
+      const user = await User.findByPk(userId)
+      const updateData = { account, name, email, password, passwordCheck }
+      await user.update(updateData)
+      return res.status(200).json({ status: 'success', message: '個人資料更新成功！' })
+
+    } catch (error) {
+      console.log(error)
+      return next(error)
+    }
+  }
 }
 
 module.exports = userController
