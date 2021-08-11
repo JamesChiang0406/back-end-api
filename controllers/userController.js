@@ -83,7 +83,7 @@ const userController = {
   // 單一使用者資料
   getUser: async (req, res, next) => {
     try {
-      let user = await User.findByPk(req.params.id)
+      let user = await User.findByPk(req.params.user_id)
 
       if (!user) {
         return res.status(404).json({ status: 'error', message: '無此使用者，請再次確認！' })
@@ -101,7 +101,7 @@ const userController = {
   putUser: async (req, res, next) => {
     try {
       const userId = helpers.getUser(req).id
-      const id = Number(req.params.id)
+      const id = Number(req.params.user_id)
       const { account, name, email, password, passwordCheck } = req.body
       const users = await User.findAll({
         where: {

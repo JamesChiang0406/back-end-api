@@ -10,10 +10,11 @@ router.post('/login', userController.login)
 router.post('/regist', userController.register)
 
 // 操作使用者資料
-router.get('/users/:id', authenticated, userController.getUser)
-router.put('/users/:id', authenticated, userController.putUser)
+router.get('/users/:user_id', authenticated, userController.getUser)
+router.put('/users/:user_id', authenticated, userController.putUser)
 
 // 操作貼文資料
 router.get('/tweets', authenticated, tweetController.getTweets)
+router.get('/tweets/:tweet_id', authenticated, tweetController.getTweet)
 
 module.exports = router
