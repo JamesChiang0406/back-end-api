@@ -127,6 +127,45 @@ const tweetController = {
       console.log(error)
       return next(error)
     }
+  },
+
+  // 編輯貼文
+  putTweet: async (req, res, next) => {
+    try {
+      const { description } = req.body
+
+      if (!description) {
+        return res.status(400).json({ status: 'error', message: '輸入框為空，請重新輸入！' })
+      } else if (description.length > 140) {
+        return res.status(400).json({ status: 'error', message: '字數超出限制，請重新輸入！' })
+      }
+
+      await Tweet.findByPk(req.params.tweet_id)
+        .then(tweet => {
+          tweet.update({ description })
+          return res.status(200).json({ status: 'success', message: '推文編輯成功！' })
+        })
+    } catch (error) {
+      console.log(error)
+      return next(error)
+    }
+  },
+
+  // 刪除貼文
+  deleteTweet: async (req, res, next) => {
+    try {
+      let tweet = await Tweet.findByPk(req.params.tweet_id)
+
+      if (tweet === null) {
+        return res.status(404).json({ status: 'error', message: '推文不存在，請重新確認！' })
+      }
+
+      tweet.destroy()
+      return res.status(200).json({ status: 'success', message: '推文刪除成功！' })
+    } catch (error) {
+      console.log(error)
+      return next(error)
+    }
   }
 }
 
