@@ -107,6 +107,26 @@ const tweetController = {
       console.log(error)
       return next(error)
     }
+  },
+
+  // 新增貼文
+  postTweet: async (req, res, next) => {
+    try {
+      const { description } = req.body
+      const UserId = helpers.getUser(req).id
+
+      if (!description) {
+        return res.status(400).json({ status: 'error', message: '輸入框為空，請重新輸入！' })
+      } else if (description.length > 140) {
+        return res.status(400).json({ status: 'error', message: '字數超出限制，請重新輸入！' })
+      }
+
+      await Tweet.create({ UserId, description })
+      return res.status(200).json({ status: 'success', message: '新增推文成功！' })
+    } catch (error) {
+      console.log(error)
+      return next(error)
+    }
   }
 }
 
