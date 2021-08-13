@@ -158,10 +158,53 @@ const tweetController = {
 
       if (tweet === null) {
         return res.status(404).json({ status: 'error', message: '推文不存在，請重新確認！' })
+      } else {
+        tweet.destroy()
+        return res.status(200).json({ status: 'success', message: '推文刪除成功！' })
+      }
+    } catch (error) {
+      console.log(error)
+      return next(error)
+    }
+  },
+
+  // 貼文按讚
+  tweetLike: async (req, res, next) => {
+    try {
+      const tweet = await Tweet.findByPk(req.params.tweet_id)
+
+      if (tweet === null) {
+        return res.status(404).json({ status: 'error', message: '此推文不存在，請重新確認！' })
+      } else {
+        await Like.create({
+          UserId: helpers.getUser(req).id,
+          TweetId: tweet.id
+        })
+
+        return res.status(200).json({ status: 'success', message: '按讚成功！' })
+      }
+    } catch (error) {
+      console.log(error)
+      return next(error)
+    }
+  },
+
+  tweetUnlike: async (req, res, next) => {
+    try {
+      let like = await Like.findOne({
+        where: {
+          UserId: helpers.getUser(req).id,
+          TweetId: req.params.tweet_id
+        }
+      })
+
+      if (like === null) {
+        return res.status(404).json({ status: 'error', message: '無效的動作，請重新確認！' })
+      } else {
+        await like.destroy()
+        return res.status(200).json({ status: 'success', message: '刪除成功！' })
       }
 
-      tweet.destroy()
-      return res.status(200).json({ status: 'success', message: '推文刪除成功！' })
     } catch (error) {
       console.log(error)
       return next(error)
