@@ -118,11 +118,11 @@ const tweetController = {
       if (!description) {
         return res.status(400).json({ status: 'error', message: '輸入框為空，請重新輸入！' })
       } else if (description.length > 140) {
-        return res.status(400).json({ status: 'error', message: '字數超出限制，請重新輸入！' })
+        return res.status(413).json({ status: 'error', message: '字數超出限制，請重新輸入！' })
       }
 
       await Tweet.create({ UserId, description })
-      return res.status(200).json({ status: 'success', message: '新增推文成功！' })
+      return res.status(201).json({ status: 'success', message: '新增推文成功！' })
     } catch (error) {
       console.log(error)
       return next(error)
@@ -137,7 +137,7 @@ const tweetController = {
       if (!description) {
         return res.status(400).json({ status: 'error', message: '輸入框為空，請重新輸入！' })
       } else if (description.length > 140) {
-        return res.status(400).json({ status: 'error', message: '字數超出限制，請重新輸入！' })
+        return res.status(413).json({ status: 'error', message: '字數超出限制，請重新輸入！' })
       }
 
       await Tweet.findByPk(req.params.tweet_id)
@@ -160,7 +160,7 @@ const tweetController = {
         return res.status(404).json({ status: 'error', message: '推文不存在，請重新確認！' })
       } else {
         tweet.destroy()
-        return res.status(200).json({ status: 'success', message: '推文刪除成功！' })
+        return res.status(201).json({ status: 'success', message: '推文刪除成功！' })
       }
     } catch (error) {
       console.log(error)
@@ -181,7 +181,7 @@ const tweetController = {
           TweetId: tweet.id
         })
 
-        return res.status(200).json({ status: 'success', message: '按讚成功！' })
+        return res.status(201).json({ status: 'success', message: '按讚成功！' })
       }
     } catch (error) {
       console.log(error)
@@ -202,7 +202,7 @@ const tweetController = {
         return res.status(404).json({ status: 'error', message: '無效的動作，請重新確認！' })
       } else {
         await like.destroy()
-        return res.status(200).json({ status: 'success', message: '刪除成功！' })
+        return res.status(201).json({ status: 'success', message: '刪除成功！' })
       }
 
     } catch (error) {
