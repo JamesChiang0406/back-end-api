@@ -12,6 +12,7 @@ const userController = {
       const { account, password } = req.body
       const user = await User.findOne({ where: { account } })
 
+      // 錯誤處理
       if (!account || !password) {
         return res.status(400).json({ status: 'error', message: '帳號或密碼未輸入！' })
       }
@@ -26,8 +27,7 @@ const userController = {
       }
 
       const payload = { id: user.id }
-      const JWT_SECRET = 'alphacamp'
-      const token = jwt.sign(payload, JWT_SECRET)
+      const token = jwt.sign(payload, process.env.JWT_SECRET)
       return res.status(200).json({
         status: 'success',
         message: '登入成功！',
@@ -38,7 +38,7 @@ const userController = {
           email: user.email,
           name: user.name,
           avatar: user.avatar,
-          role: user
+          role: user.role
         }
       })
 

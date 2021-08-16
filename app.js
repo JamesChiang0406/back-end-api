@@ -3,7 +3,7 @@ const flash = require('connect-flash')
 const helpers = require('./_helpers');
 
 if (process.env.NODE_ENV !== 'production') {
-  require('dotenv').config
+  require('dotenv').config()
 }
 
 const app = express()
