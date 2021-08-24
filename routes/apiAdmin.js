@@ -9,4 +9,7 @@ router.post('/login', adminController.login)
 // 操作使用者資料
 router.get('/users', authenticated, authenticatedAdmin, adminController.getUsers)
 
+// 操作推文資料
+router.delete('/tweets/:tweet_id', authenticated, authenticatedAdmin, adminController.deleteTweet)
+
 module.exports = router

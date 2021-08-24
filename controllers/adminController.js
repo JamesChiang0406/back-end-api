@@ -98,6 +98,23 @@ const adminController = {
       console.log(error)
       return next(error)
     }
+  },
+
+  deleteTweet: async (req, res, next) => {
+    try {
+      const tweetId = req.params.tweet_id
+      const tweet = await Tweet.findByPk(tweetId)
+
+      if (!tweet) {
+        return res.status(401).json({ status: 'error', message: '推文不存在，請重新確認！' })
+      }
+
+      await tweet.destroy()
+      return res.status(200).json({ status: 'success', message: '刪除成功！' })
+    } catch (error) {
+      console.log(error)
+      return next(error)
+    }
   }
 }
 
