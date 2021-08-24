@@ -4,6 +4,7 @@ const Tweet = db.Tweet
 const Like = db.Like
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
+const { sequelize } = require('../models')
 
 const adminController = {
   login: async (req, res, next) => {
@@ -40,6 +41,59 @@ const adminController = {
           role: user.role
         }
       })
+    } catch (error) {
+      console.log(error)
+      return next(error)
+    }
+  },
+
+  getUsers: async (req, res, next) => {
+    try {
+      let users = await User.findAll({
+        where: { role: 'user' },
+        include: [
+          { model: Tweet, include: [Like] },
+          { model: User, as: 'Followers' },
+          { model: User, as: 'Followings' }
+        ],
+        attributes: {
+          include: [
+            [
+              sequelize.literal('(SELECT COUNT(*) FROM Tweets WHERE Tweets.UserId = User.id)'), 'tweetCount'
+            ]
+          ]
+        },
+        order: [
+          [
+            sequelize.literal('tweetCount'), 'DESC'
+          ]
+        ]
+      })
+
+      if (!users.length) {
+        return res.status(200).json({ status: 'success', message: '無使用者資料，請重新確認！' })
+      }
+
+      users = users.map(user => {
+        let tweetLikedCount = 0
+        user.Tweets.forEach(tweet => {
+          tweetLikedCount += tweet.Likes.length
+        })
+
+        return {
+          id: user.id,
+          account: user.account,
+          name: user.name,
+          avatar: user.avatar,
+          cover: user.cover,
+          tweetNumbers: user.Tweets.length,
+          likeNumbers: tweetLikedCount,
+          followingNumbers: user.Followings.length,
+          followerNumbers: user.Followers.length,
+        }
+      })
+
+      return res.status(200).json(users)
     } catch (error) {
       console.log(error)
       return next(error)
