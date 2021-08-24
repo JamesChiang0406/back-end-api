@@ -11,7 +11,7 @@ const tweetController = {
     try {
       const userId = helpers.getUser(req).id
       let tweets = await Tweet.findAll({
-        where: { userId },
+        order: [['updatedAt', 'DESC']],
         include: [User, Reply, Like]
       })
 
