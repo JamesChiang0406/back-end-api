@@ -10,6 +10,7 @@ router.post('/login', userController.login)
 router.post('/regist', userController.register)
 
 // 操作使用者資料
+router.get('/users/current_user', authenticated, userController.getCurrentUser)
 router.get('/users/:user_id', authenticated, userController.getUser)
 router.put('/users/:user_id', authenticated, userController.putUser)
 
@@ -23,7 +24,8 @@ router.post('/tweets/:tweet_id/like', authenticated, tweetController.tweetLike)
 router.delete('/tweets/:tweet_id/like', authenticated, tweetController.tweetUnlike)
 
 // 操作跟隨者資料
+router.get('/followships', authenticated, followshipController.getRecommendList)
 router.post('/followships', authenticated, followshipController.addFollowing)
-router.delete('/followships', authenticated, followshipController.removeFollowing)
+router.delete('/followships/:id', authenticated, followshipController.removeFollowing)
 
 module.exports = router

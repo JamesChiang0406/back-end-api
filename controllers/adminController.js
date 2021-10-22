@@ -38,6 +38,8 @@ const adminController = {
           email: user.email,
           name: user.name,
           avatar: user.avatar,
+          cover: user.cover,
+          introduction: user.introduction,
           role: user.role
         }
       })

@@ -2,6 +2,8 @@ const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const db = require('../models')
 const User = db.User
+const Tweet = db.Tweet
+const Like = db.Like
 const { Op } = require('sequelize')
 const helpers = require('../_helpers')
 
@@ -38,6 +40,8 @@ const userController = {
           email: user.email,
           name: user.name,
           avatar: user.avatar,
+          cover: user.cover,
+          introduction: user.introduction,
           role: user.role
         }
       })
@@ -69,7 +73,7 @@ const userController = {
         name,
         email,
         password: bcrypt.hashSync(password, bcrypt.genSaltSync(10)),
-        role: user
+        role: 'user'
       })
 
       return res.status(200).json({ status: 'success', message: '帳號創立成功！' })
@@ -83,7 +87,11 @@ const userController = {
   // 單一使用者資料
   getUser: async (req, res, next) => {
     try {
-      let user = await User.findByPk(req.params.user_id)
+      let user = await User.findByPk(req.params.user_id, {
+        attributes: {
+          exclude: ['password']
+        }
+      })
 
       if (!user) {
         return res.status(404).json({ status: 'error', message: '無此使用者，請再次確認！' })
@@ -102,7 +110,7 @@ const userController = {
     try {
       const userId = helpers.getUser(req).id
       const id = Number(req.params.user_id)
-      const { account, name, email, password, passwordCheck } = req.body
+      let { account, name, email, password, passwordCheck } = req.body
       const users = await User.findAll({
         where: {
           [Op.or]: [{ account }, { email }],
@@ -120,6 +128,7 @@ const userController = {
         return res.status(409).json({ status: 'error', message: '帳號或電子郵件已存在，請重新輸入！' })
       }
 
+      password = bcrypt.hashSync(req.body.password, bcrypt.genSaltSync(10))
       const user = await User.findByPk(userId)
       const updateData = { account, name, email, password, passwordCheck }
       await user.update(updateData)
@@ -129,6 +138,19 @@ const userController = {
       console.log(error)
       return next(error)
     }
+  },
+
+  getCurrentUser: (req, res) => {
+    return res.status(200).json({
+      id: req.user.id,
+      account: req.user.account,
+      email: req.user.email,
+      name: req.user.name,
+      avatar: req.user.avatar,
+      cover: req.user.cover,
+      introduction: req.user.introduction,
+      role: req.user.role
+    })
   }
 }
 
