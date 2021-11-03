@@ -209,6 +209,46 @@ const tweetController = {
       console.log(error)
       return next(error)
     }
+  },
+
+  getReplies: async (req, res, next) => {
+    try {
+      let userId = req.params.user_id
+      let replies = await Reply.findAll({
+        where: { UserId: userId },
+        order: [['updatedAt', 'DESC']],
+        include: [
+          User,
+          { model: Tweet, include: [User] }
+        ]
+      })
+
+      if (replies.length === 0) {
+        return res.status(401).json({ status: 'error', message: '無相關資料，請重新確認！' })
+      }
+
+      replies = replies.map(reply => {
+        return {
+          id: reply.id,
+          UserId: reply.UserId,
+          description: reply.comment,
+          createdAt: reply.createdAt,
+          updatedAt: reply.updatedAt,
+          user: {
+            account: reply.User.account,
+            name: reply.User.name,
+            avatar: reply.User.avatar
+          },
+          repliedUserAccount: reply.Tweet.User.account,
+          repliedUserId: reply.Tweet.User.id
+        }
+      })
+
+      return res.status(200).json(replies)
+    } catch (error) {
+      console.log(error)
+      return next(error)
+    }
   }
 }
 

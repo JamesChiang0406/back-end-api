@@ -2,8 +2,7 @@ const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const db = require('../models')
 const User = db.User
-const Tweet = db.Tweet
-const Like = db.Like
+const { sequelize } = require('../models')
 const { Op } = require('sequelize')
 const helpers = require('../_helpers')
 
@@ -89,7 +88,15 @@ const userController = {
     try {
       let user = await User.findByPk(req.params.user_id, {
         attributes: {
-          exclude: ['password']
+          exclude: ['password'],
+          include: [
+            [
+              sequelize.literal('(SELECT COUNT(*) FROM Followships WHERE Followships.followerId = User.id)'), 'followingCount'
+            ],
+            [
+              sequelize.literal('(SELECT COUNT(*) FROM Followships WHERE Followships.followingId = User.id)'), 'followerCount'
+            ]
+          ]
         }
       })
 

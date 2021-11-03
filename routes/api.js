@@ -16,6 +16,7 @@ router.put('/users/:user_id', authenticated, userController.putUser)
 
 // 操作貼文資料
 router.get('/tweets', authenticated, tweetController.getTweets)
+router.get('/tweets/replies/:user_id', authenticated, tweetController.getReplies)
 router.get('/tweets/:tweet_id', authenticated, tweetController.getTweet)
 router.post('/tweets/', authenticated, tweetController.postTweet)
 router.put('/tweets/:tweet_id', authenticated, tweetController.putTweet)
