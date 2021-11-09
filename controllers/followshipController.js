@@ -93,6 +93,60 @@ const followshipController = {
       console.log(error)
       return next(error)
     }
+  },
+
+  getFollowers: async (req, res, next) => {
+    try {
+      let data = await User.findByPk(req.params.user_id, {
+        include: [
+          { model: User, as: 'Followers' },
+          { model: User, as: 'Followings' }
+        ]
+      })
+
+      data = data.Followers.map(user => {
+        let followingsId = data.Followings.map(user => user.id)
+        return {
+          id: user.id,
+          account: user.account,
+          name: user.name,
+          avatar: user.avatar,
+          introduction: user.introduction,
+          isFollowing: followingsId.includes(user.id)
+        }
+      })
+
+      return res.status(200).json(data)
+    } catch (error) {
+      console.log(error)
+      return next(error)
+    }
+  },
+
+  getFollowings: async (req, res, next) => {
+    try {
+      let data = await User.findByPk(req.params.user_id, {
+        include: [
+          { model: User, as: 'Followings' }
+        ]
+      })
+
+      data = data.Followings.map(user => {
+        return {
+          id: user.id,
+          account: user.account,
+          name: user.name,
+          avatar: user.avatar,
+          introduction: user.introduction,
+          isFollowing: true
+        }
+      })
+
+      return res.status(200).json(data)
+    } catch (error) {
+      console.log(error)
+      return next(error)
+    }
   }
 }
 

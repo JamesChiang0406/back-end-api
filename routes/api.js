@@ -25,8 +25,10 @@ router.post('/tweets/:tweet_id/like', authenticated, tweetController.tweetLike)
 router.delete('/tweets/:tweet_id/like', authenticated, tweetController.tweetUnlike)
 
 // 操作跟隨者資料
-router.get('/followships', authenticated, followshipController.getRecommendList)
+router.get('/recommends', authenticated, followshipController.getRecommendList)
 router.post('/followships', authenticated, followshipController.addFollowing)
 router.delete('/followships/:id', authenticated, followshipController.removeFollowing)
+router.get('/followers/:user_id', authenticated, followshipController.getFollowers)
+router.get('/followings/:user_id', authenticated, followshipController.getFollowings)
 
 module.exports = router
