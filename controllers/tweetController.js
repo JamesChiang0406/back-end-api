@@ -16,7 +16,7 @@ const tweetController = {
       })
 
       if (tweets.length === 0) {
-        return res.status(401).json({ status: 'error', message: '此帳戶並無推文，請重新查詢！' })
+        return res.status(401).json({ status: 'error', message: '並無此資料，請重新查詢！' })
       }
 
       tweets = tweets.map(tweet => {
@@ -189,6 +189,7 @@ const tweetController = {
     }
   },
 
+  // 取消按讚
   tweetUnlike: async (req, res, next) => {
     try {
       let like = await Like.findOne({
@@ -211,6 +212,7 @@ const tweetController = {
     }
   },
 
+  // 取得貼文回覆
   getReplies: async (req, res, next) => {
     try {
       let userId = req.params.user_id
@@ -249,7 +251,57 @@ const tweetController = {
       console.log(error)
       return next(error)
     }
-  }
+  },
+
+  // 查看其它使用者的貼文
+  getUserTweets: async (req, res, next) => {
+    try {
+      const userId = req.params.user_id
+      let tweets = await Tweet.findAll({
+        order: [['updatedAt', 'DESC']],
+        include: [User, Reply, Like]
+      })
+      let userLikes = await Like.findAll({
+        where: { UserId: helpers.getUser(req).id }
+      })
+
+
+      if (tweets.length === 0) {
+        return res.status(401).json({ status: 'error', message: '此帳戶並無推文，請重新查詢！' })
+      }
+
+      userLikes = userLikes.map(item => { return item.TweetId })
+      tweets = tweets.map(tweet => {
+        const likes = tweet.Likes.map(Like => {
+          if (Like.UserId === Number(userId)) {
+            return true
+          }
+        })
+
+        return {
+          id: tweet.id,
+          UserId: tweet.UserId,
+          description: tweet.description,
+          createdAt: tweet.createdAt,
+          updatedAt: tweet.updatedAt,
+          likedCount: tweet.Likes.length,
+          repliedCount: tweet.Replies.length,
+          isLiked: likes ? likes.includes(true) : null,
+          isUserLiked: userLikes.includes(tweet.id),
+          user: {
+            avatar: tweet.User.avatar,
+            name: tweet.User.name,
+            account: tweet.User.account
+          }
+        }
+      })
+
+      return res.status(200).json(tweets)
+    } catch (error) {
+      console.log(error)
+      return next(error)
+    }
+  },
 }
 
 module.exports = tweetController
