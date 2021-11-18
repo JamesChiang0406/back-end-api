@@ -226,7 +226,7 @@ const tweetController = {
       })
 
       if (replies.length === 0) {
-        return res.status(401).json({ status: 'error', message: '無相關資料，請重新確認！' })
+        return res.status(200).json({ status: 'error', message: '無相關資料，請重新確認！' })
       }
 
       replies = replies.map(reply => {
@@ -267,7 +267,7 @@ const tweetController = {
 
 
       if (tweets.length === 0) {
-        return res.status(401).json({ status: 'error', message: '此帳戶並無推文，請重新查詢！' })
+        return res.status(401).json({ status: 'error', message: '無相關資料，請重新查詢！' })
       }
 
       userLikes = userLikes.map(item => { return item.TweetId })

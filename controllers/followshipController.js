@@ -97,22 +97,33 @@ const followshipController = {
 
   getFollowers: async (req, res, next) => {
     try {
+      // 取得資料 & 錯誤處理
       let data = await User.findByPk(req.params.user_id, {
         include: [
-          { model: User, as: 'Followers' },
-          { model: User, as: 'Followings' }
+          { model: User, as: 'Followers' }
         ]
       })
 
+      if (!data) {
+        return res.status(404).json({ status: 'error', message: '沒有相關資料，請稍後再試！' })
+      }
+
+      // 取得使用者追蹤資料
+      let userData = await User.findByPk(helpers.getUser(req).id, {
+        include: [
+          { model: User, as: 'Followings' }
+        ]
+      })
+      userData = userData.Followings.map(user => user.id)
+
       data = data.Followers.map(user => {
-        let followingsId = data.Followings.map(user => user.id)
         return {
           id: user.id,
           account: user.account,
           name: user.name,
           avatar: user.avatar,
           introduction: user.introduction,
-          isFollowing: followingsId.includes(user.id)
+          isUserFollowing: userData.includes(user.id)
         }
       })
 
@@ -125,11 +136,24 @@ const followshipController = {
 
   getFollowings: async (req, res, next) => {
     try {
+      // 取得資料 & 錯誤處理
       let data = await User.findByPk(req.params.user_id, {
         include: [
           { model: User, as: 'Followings' }
         ]
       })
+
+      if (!data) {
+        return res.status(404).json({ status: 'error', message: '沒有相關資料，請稍後再試！' })
+      }
+
+      // 取得使用者追蹤資料
+      let userData = await User.findByPk(helpers.getUser(req).id, {
+        include: [
+          { model: User, as: 'Followings' }
+        ]
+      })
+      userData = userData.Followings.map(user => user.id)
 
       data = data.Followings.map(user => {
         return {
@@ -138,7 +162,7 @@ const followshipController = {
           name: user.name,
           avatar: user.avatar,
           introduction: user.introduction,
-          isFollowing: true
+          isUserFollowing: userData.includes(user.id)
         }
       })
 
