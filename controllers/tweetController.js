@@ -155,13 +155,17 @@ const tweetController = {
   deleteTweet: async (req, res, next) => {
     try {
       let tweet = await Tweet.findByPk(req.params.tweet_id)
+      const UserId = helpers.getUser(req).id
 
       if (tweet === null) {
         return res.status(404).json({ status: 'error', message: '推文不存在，請重新確認！' })
-      } else {
-        tweet.destroy()
-        return res.status(201).json({ status: 'success', message: '推文刪除成功！' })
       }
+      if (tweet.UserId !== UserId) {
+        return res.status(403).json({ status: 'error', message: '未授權的動作，請重新確認！' })
+      }
+
+      tweet.destroy()
+      return res.status(201).json({ status: 'success', message: '推文刪除成功！' })
     } catch (error) {
       console.log(error)
       return next(error)
@@ -247,6 +251,49 @@ const tweetController = {
       })
 
       return res.status(200).json(replies)
+    } catch (error) {
+      console.log(error)
+      return next(error)
+    }
+  },
+
+  // 新增回覆
+  postReply: async (req, res, next) => {
+    try {
+      const UserId = helpers.getUser(req).id
+      const { TweetId, comment } = req.body
+      let tweet = await Tweet.findByPk(TweetId)
+
+      if (!tweet) {
+        return res.status(400).json({ status: 'error', message: '無此推文，請重新查詢！' })
+      }
+      if (!comment) {
+        return res.status(400).json({ status: 'error', message: '留言不可為空，請重新確認！' })
+      }
+
+      await Reply.create({ UserId, TweetId, comment })
+      return res.status(201).json({ status: 'success', message: '新增回應成功！' })
+    } catch (error) {
+      console.log(error)
+      return next(error)
+    }
+  },
+
+  // 刪除回覆
+  deleteReply: async (req, res, next) => {
+    try {
+      const UserId = helpers.getUser(req).id
+      const reply = await Reply.findByPk(req.params.reply_id)
+
+      if (!reply) {
+        return res.status(400).json({ status: 'error', message: '無此回覆，請重新查詢！' })
+      }
+      if (reply.UserId !== UserId) {
+        return res.status(403).json({ status: 'error', message: '未授權的動作，請重新確認！' })
+      }
+
+      reply.destroy()
+      return res.status(201).json({ status: 'success', message: '回覆刪除成功！' })
     } catch (error) {
       console.log(error)
       return next(error)
