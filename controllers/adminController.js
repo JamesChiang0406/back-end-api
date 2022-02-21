@@ -2,6 +2,7 @@ const db = require('../models')
 const User = db.User
 const Tweet = db.Tweet
 const Like = db.Like
+const Reply = db.Reply
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const { sequelize } = require('../models')
@@ -106,11 +107,15 @@ const adminController = {
     try {
       const tweetId = req.params.tweet_id
       const tweet = await Tweet.findByPk(tweetId)
+      const replies = await Reply.findAll({ where: { TweetId: tweetId } })
 
       if (!tweet) {
         return res.status(401).json({ status: 'error', message: '推文不存在，請重新確認！' })
       }
 
+      await replies.forEach(reply => {
+        reply.destroy()
+      })
       await tweet.destroy()
       return res.status(200).json({ status: 'success', message: '刪除成功！' })
     } catch (error) {

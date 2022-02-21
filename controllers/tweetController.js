@@ -155,6 +155,7 @@ const tweetController = {
   deleteTweet: async (req, res, next) => {
     try {
       let tweet = await Tweet.findByPk(req.params.tweet_id)
+      let replies = await Reply.findAll({ where: { TweetId: req.params.tweet_id } })
       const UserId = helpers.getUser(req).id
 
       if (tweet === null) {
@@ -164,7 +165,10 @@ const tweetController = {
         return res.status(403).json({ status: 'error', message: '未授權的動作，請重新確認！' })
       }
 
-      tweet.destroy()
+      await replies.forEach(reply => {
+        reply.destroy()
+      })
+      await tweet.destroy()
       return res.status(201).json({ status: 'success', message: '推文刪除成功！' })
     } catch (error) {
       console.log(error)
