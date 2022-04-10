@@ -119,7 +119,7 @@ const userController = {
     try {
       const userId = helpers.getUser(req).id
       const id = Number(req.params.user_id)
-      let { account, name, email, password, passwordCheck } = req.body
+      let { account, name, email, introduction, password, passwordCheck } = req.body
       const users = await User.findAll({
         where: {
           [Op.or]: [{ account }, { email }],
@@ -139,7 +139,7 @@ const userController = {
 
       password = bcrypt.hashSync(req.body.password, bcrypt.genSaltSync(10))
       const user = await User.findByPk(userId)
-      const updateData = { account, name, email, password, passwordCheck }
+      const updateData = { account, name, email, introduction, password, passwordCheck }
       await user.update(updateData)
       return res.status(200).json({ status: 'success', message: '個人資料更新成功！' })
 
