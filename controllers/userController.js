@@ -1,5 +1,7 @@
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
+const imgur = require('imgur-node-api')
+const IMGUR_CLIENT_ID = 'f45e72d428e7bbe'
 const db = require('../models')
 const User = db.User
 const { sequelize } = require('../models')
@@ -147,6 +149,7 @@ const userController = {
     }
   },
 
+  // 獲得目前使用者資料
   getCurrentUser: (req, res) => {
     return res.status(200).json({
       id: req.user.id,
@@ -158,6 +161,51 @@ const userController = {
       introduction: req.user.introduction,
       role: req.user.role
     })
+  },
+
+  // 修改使用者封面或照片
+  putAvatarImg: async (req, res, next) => {
+    try {
+      const { file } = req
+
+      if (file) {
+        imgur.setClientID(IMGUR_CLIENT_ID)
+        imgur.upload(file.path, (err, img) => {
+          return User.findByPk(helpers.getUser(req).id)
+            .then(user => {
+              user.update({ avatar: file ? img.data.link : user.avatar })
+              return res.status(200).json({ status: 'success', message: '更改成功！' })
+            })
+        })
+      } else {
+        return res.status(400).json({ status: 'error', message: '無法更換圖片，請重新確認有無缺漏！' })
+      }
+    } catch (error) {
+      console.log(error)
+      return next(error)
+    }
+  },
+
+  putCoverImg: async (req, res, next) => {
+    try {
+      const { file } = req
+
+      if (file) {
+        imgur.setClientID(IMGUR_CLIENT_ID)
+        imgur.upload(file.path, (err, img) => {
+          return User.findByPk(helpers.getUser(req).id)
+            .then(user => {
+              user.update({ cover: file ? img.data.link : user.cover })
+              return res.status(200).json({ status: 'success', message: '更改成功！' })
+            })
+        })
+      } else {
+        return res.status(400).json({ status: 'error', message: '無法更換圖片，請重新確認有無缺漏！' })
+      }
+    } catch (error) {
+      console.log(error)
+      return next(error)
+    }
   }
 }
 

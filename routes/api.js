@@ -1,4 +1,6 @@
 const express = require('express')
+const multer = require('multer')
+const upload = multer({ dest: 'temp/' })
 const router = express.Router()
 const userController = require('../controllers/userController')
 const followshipController = require('../controllers/followshipController')
@@ -12,6 +14,8 @@ router.post('/regist', userController.register)
 // 操作使用者資料
 router.get('/users/current_user', authenticated, userController.getCurrentUser)
 router.get('/users/:user_id', authenticated, userController.getUser)
+router.put('/users/image/cover', authenticated, upload.single('image'), userController.putCoverImg)
+router.put('/users/image/avatar', authenticated, upload.single('image'), userController.putAvatarImg)
 router.put('/users/:user_id', authenticated, userController.putUser)
 
 // 操作貼文資料
