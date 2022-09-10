@@ -38,4 +38,5 @@ router.delete('/followships/:id', authenticated, followshipController.removeFoll
 router.get('/followers/:user_id', authenticated, followshipController.getFollowers)
 router.get('/followings/:user_id', authenticated, followshipController.getFollowings)
 
+
 module.exports = router

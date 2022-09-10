@@ -1,12 +1,12 @@
 const express = require('express')
 const flash = require('connect-flash')
 const cors = require('cors')
+const app = express()
 
 if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config()
 }
 
-const app = express()
 const port = 3000
 
 app.use(cors())
@@ -14,6 +14,7 @@ app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
 app.use(flash())
 
-app.listen(port, () => console.log(`Example app listening on port ${port}!`))
+const server = app.listen(port, () => console.log(`Example app listening on port ${port}!`))
 
-require('./routes')(app)
+require('./routes/index')(app)
+require('./socket/socket')(server)
