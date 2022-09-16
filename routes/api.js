@@ -5,6 +5,7 @@ const router = express.Router()
 const userController = require('../controllers/userController')
 const followshipController = require('../controllers/followshipController')
 const tweetController = require('../controllers/tweetController')
+const chatController = require('../controllers/chatController')
 const { authenticated } = require('../middleware/auth')
 
 // 登入 & 註冊
@@ -37,6 +38,10 @@ router.post('/followships', authenticated, followshipController.addFollowing)
 router.delete('/followships/:id', authenticated, followshipController.removeFollowing)
 router.get('/followers/:user_id', authenticated, followshipController.getFollowers)
 router.get('/followings/:user_id', authenticated, followshipController.getFollowings)
+
+// 操作聊天室資料
+router.get('/chatroom/:chatter_id', authenticated, chatController.getChats)
+router.post('/chatroom/:chatter_id', authenticated, chatController.postChat)
 
 
 module.exports = router
