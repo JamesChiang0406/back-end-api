@@ -1,6 +1,7 @@
 const db = require('../models')
 const Chat = db.Chat
 const User = db.User
+const { Op } = require('sequelize')
 const helpers = require('../_helpers')
 
 
@@ -9,25 +10,28 @@ const chatController = {
     try {
       const userId = helpers.getUser(req).id
       const chattingTo = Number(req.params.chatter_id)
+      const chatter = await User.findByPk(chattingTo)
 
       let chats = await Chat.findAll({
         where: {
-          userId,
-          chattingTo
+          [Op.or]: [
+            { userId, chattingTo },
+            { userId: chattingTo, chattingTo: userId }
+          ]
         },
-        order: [['updatedAt', 'ASC']]
+        order: [['createdAt', 'ASC']]
       })
 
-      if (userId === chattingTo) {
+      if (!chatter) {
+        return res.status(404).json({ status: 'error', message: '無此使用者，請重新查詢！' })
+      } else if (userId === chattingTo) {
         return res.status(403).json({ status: 'error', message: '無效的操作，請重新確認！' })
-      } else if (chats.length === 0) {
-        return res.status(404).json({ status: 'error', message: '無此資料，請重新查詢！' })
       }
 
       chats = chats.map(chat => {
         return {
-          userId: chat.userId,
-          chattingTo: chat.chattingTo,
+          isUserMsg: chat.userId === userId ? true : false,
+          chatterAvatar: chat.userId === userId ? null : chatter.avatar,
           chatDetail: chat.chatDetail,
           createdAt: chat.createdAt
         }
@@ -42,8 +46,8 @@ const chatController = {
 
   postChat: async (req, res, next) => {
     try {
-      const { content } = req.body
-      const chattingTo = Number(req.params.chatter_id)
+      const { content, chatter_id } = req.body
+      const chattingTo = Number(chatter_id)
       let chatter = await User.findByPk(chattingTo)
 
       if (chattingTo === helpers.getUser(req).id) {

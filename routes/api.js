@@ -41,7 +41,7 @@ router.get('/followings/:user_id', authenticated, followshipController.getFollow
 
 // 操作聊天室資料
 router.get('/chatroom/:chatter_id', authenticated, chatController.getChats)
-router.post('/chatroom/:chatter_id', authenticated, chatController.postChat)
+router.post('/chatroom', authenticated, chatController.postChat)
 
 
 module.exports = router

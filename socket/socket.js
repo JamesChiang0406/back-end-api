@@ -12,16 +12,14 @@ module.exports = (server) => {
   io.on('connection', (socket) => {
     console.log('from frontend connecting...')
 
-    socket.on('send', function (obj) {
-      console.log(obj);
+    // 打開聊天室時，同時通知對方
+    socket.on('chatAlert', (obj) => {
+      socket.broadcast.emit('openOthersRoom', obj)
+    })
 
-      socket.emit('other', {
-        msg: 'other msg',
-      });
-      socket.emit('self', {
-        msg: 'self msg',
-      });
+    // 發送訊息
+    socket.on('send', (obj) => {
+      socket.broadcast.emit('receiveMsg', obj)
     });
-
   });
 }
