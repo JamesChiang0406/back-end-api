@@ -7,7 +7,7 @@ if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config()
 }
 
-const port = 3000
+const port = process.env.port
 
 app.use(cors())
 app.use(express.urlencoded({ extended: true }))
