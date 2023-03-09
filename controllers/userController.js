@@ -1,7 +1,7 @@
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const imgur = require('imgur-node-api')
-const IMGUR_CLIENT_ID = 'f45e72d428e7bbe'
+const IMGUR_CLIENT_ID = process.env.IMGUR_CLIENT_ID
 const db = require('../models')
 const User = db.User
 const { sequelize } = require('../models')
