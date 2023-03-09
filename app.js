@@ -14,7 +14,7 @@ app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
 app.use(flash())
 
-const server = app.listen(port, () => console.log(`Example app listening on port ${port}!`))
+const server = app.listen(port, () => console.log(`Example app listening on port ${process.env.port}!`))
 
 require('./routes/index')(app)
 require('./socket/socket')(server)
