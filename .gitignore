@@ -87,3 +87,5 @@ typings/
 .dynamodb/
 
 temp/
+
+package-lock.json
