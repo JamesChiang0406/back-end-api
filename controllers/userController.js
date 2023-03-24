@@ -1,12 +1,11 @@
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
-const imgur = require('imgur-node-api')
-const IMGUR_CLIENT_ID = process.env.IMGUR_CLIENT_ID
 const db = require('../models')
 const User = db.User
 const { sequelize } = require('../models')
 const { Op } = require('sequelize')
 const helpers = require('../_helpers')
+const { imgurFileHandler } = require('../helpers/file-helper')
 
 const userController = {
   // 登入
@@ -169,14 +168,14 @@ const userController = {
       const { file } = req
 
       if (file) {
-        imgur.setClientID(IMGUR_CLIENT_ID)
-        imgur.upload(file.path, (err, img) => {
-          return User.findByPk(helpers.getUser(req).id)
-            .then(user => {
-              user.update({ avatar: file ? img.data.link : user.avatar })
-              return res.status(200).json({ status: 'success', message: '更改成功！' })
-            })
-        })
+        return Promise.all([
+          User.findByPk(helpers.getUser(req).id),
+          imgurFileHandler(file)
+        ])
+          .then(([user, filePath]) => {
+            user.update({ avatar: filePath })
+            return res.status(200).json({ status: 'success', message: '更改成功！' })
+          })
       } else {
         return res.status(400).json({ status: 'error', message: '無法更換圖片，請重新確認有無缺漏！' })
       }
@@ -190,15 +189,16 @@ const userController = {
     try {
       const { file } = req
 
+
       if (file) {
-        imgur.setClientID(IMGUR_CLIENT_ID)
-        imgur.upload(file.path, (err, img) => {
-          return User.findByPk(helpers.getUser(req).id)
-            .then(user => {
-              user.update({ cover: file ? img.data.link : user.cover })
-              return res.status(200).json({ status: 'success', message: '更改成功！' })
-            })
-        })
+        return Promise.all([
+          User.findByPk(helpers.getUser(req).id),
+          imgurFileHandler(file)
+        ])
+          .then(([user, filePath]) => {
+            user.update({ cover: filePath })
+            return res.status(200).json({ status: 'success', message: '更改成功！' })
+          })
       } else {
         return res.status(400).json({ status: 'error', message: '無法更換圖片，請重新確認有無缺漏！' })
       }
