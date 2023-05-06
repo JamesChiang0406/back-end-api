@@ -7,6 +7,9 @@
 1. 在終端機上輸入 git clone https://github.com/JamesChiang0406/back-end-api
 2. 輸入cd進入下載的資料夾
 3. 輸入npm install 以安裝所用之套件
+4. 確認MySQL資料庫的資訊是否與config.json中的資訊相同
+5. 執行前確認NODE_ENV是否為test，若否輸入export NODE_ENV=test；若是執行node app.js
+6. 另附有seed檔案可提供測試資料
 ```
 
 ## API 的相關功能
