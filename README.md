@@ -1,5 +1,5 @@
 # back-end-api
-**此頁面為[front-end-vue](https://github.com/JamesChiang0406/front-end-vue)的後端頁面**
+**此頁面為[front-end-vue](https://github.com/JamesChiang0406/front-end-vue)的後端頁面，需搭配使用。**
 
 
 ## 專案下載
